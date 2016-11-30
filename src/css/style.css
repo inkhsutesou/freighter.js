@@ -1,0 +1,30 @@
+body,
+html {
+  background: #ffffff;
+}
+.button {
+  display: inline-block;
+  border: 1px solid #bf9f40;
+  color: #bf9f40;
+  cursor: pointer;
+}
+.button:before {
+  display: inline-block;
+  color: inherit;
+}
+.button:hover {
+  border-color: #4abf40;
+  color: #4abf40;
+}
+.add:before {
+  content: "+";
+}
+.remove:before {
+  content: "-";
+}
+.close:before {
+  content: "X";
+}
+#template-list {
+  display: none;
+}
