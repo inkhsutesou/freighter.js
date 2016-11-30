@@ -3,5 +3,3 @@ dist
 dist/*
 npm-debug.log
 data.json
-make
-make/*
