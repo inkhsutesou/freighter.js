@@ -29,7 +29,7 @@ function createWindow () {
   mainWindow = new BrowserWindow( browserConfig );
   mainWindow.loadURL( urlString )
 
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   mainWindow.on('closed', function () {
 	

@@ -5,11 +5,32 @@
   <head>
 
     <meta charset="UTF-8">
-    <title>TITLE</title>
+    <title>freighter.js - Import and Export folders</title>
+		<link rel="stylesheet" type="text/css" href="./src/css/style.css"></link>
 
   </head>
 
-  <body></body>
+  <body>
+
+		<div class="job-container"></div>
+
+		<input name="path" type="text">
+		<div class="add button"></div>
+		<div class="close button"></div>
+
+		<div id="template-list">
+
+			<div class="job" jobIndex="{{ index }}">
+
+				<div class="path">{{ path }}</div>
+				<div class="timestamp">{{ timestamp }}</div>
+				<div class="remove button"></div>
+
+			</div>
+
+		</div>
+
+	</body>
 
   <script>
     require( "./src/js/init.js" );
