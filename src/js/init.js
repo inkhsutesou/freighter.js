@@ -2,9 +2,9 @@
 
 const FILESYSTEM = require( "fs" ),
 	NODELIST = {},
-	READOPT = { "encoding": "utf-8" },
-	WRITOPT = { "encoding": "utf-8" },
-	DATE = new Date();
+	FSOPT = { "encoding": "utf-8" },
+	DATE = new Date(),
+	SAVEFILEPATH = "./app/saveFile.json";
 
 let settings;
 
@@ -18,6 +18,15 @@ NODELIST.input = document.querySelector( "[ name='path' ]" );
 NODELIST.jobContainer = document.querySelector( ".job-container" );
 
 NODELIST.add.addEventListener( "click", addJob, false );
+NODELIST.close.addEventListener( "click", closeWindow, false );
+
+function closeWindow ( event ) {
+
+	console.log( "closeWindow", arguments );
+
+	window.close();
+
+}
 
 function addJob ( event ) {
 
@@ -97,7 +106,7 @@ function refreshScreen ( callback ) {
 
 function loadData ( callback ) {
 
-	FILESYSTEM.readFile( "data.json", READOPT, function loadDataCallback ( error, data ) {
+	FILESYSTEM.readFile( SAVEFILEPATH, FSOPT, function loadDataCallback ( error, data ) {
 	
 		console.log( "loadDataCallback", arguments );
 
@@ -124,7 +133,7 @@ function loadData ( callback ) {
 
 function saveData ( callback ) {
 
-	FILESYSTEM.writeFile( "data.json", JSON.stringify( settings ), WRITOPT, function saveDataCallback ( error, data) {
+	FILESYSTEM.writeFile( SAVEFILEPATH, JSON.stringify( settings ), FSOPT, function saveDataCallback ( error, data) {
 
 		console.log( "saveData", arguments );
 		callback && callback();

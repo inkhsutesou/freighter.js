@@ -6,12 +6,12 @@
   "description": "DESCRIPTION",
   "main": "main.js",
   "repository": "",
-  "common": "electron-packager . APPNAME --ignore=(dist|make|README.md) --overwrite",
+  "common": "electron-packager ./app APPNAME --overwrite",
   "winico": "--icon=src/assets/build/win/icon.ico",
   "osxico": "--icon=src/assets/build/osx/icon.icns",
   "scripts": {
-		"postinstall": "mkdir dist",
-    "start": "node ./make/less.js && electron .",
+    "postinstall": "mkdir dist",
+    "start": "node ./make/make.js && electron .",
     "pack:win32": "%npm_package_common% %npm_package_winico% --out=dist/win --platform=win32 --arch=ia32",
     "pack:win64": "%npm_package_common% %npm_package_winico% --out=dist/win --platform=win32 --arch=x64",
     "pack:linux": "%npm_package_common% %npm_package_winico% --out=dist/linux --platform=linux --arch=x64",
@@ -25,7 +25,8 @@
   ],
   "devDependencies": {
     "electron": "^1.4.1",
-    "electron-packager": "^8.3.0"
+    "electron-packager": "^8.3.0",
+    "node-dir": "^0.1.16"
   },
   "dependencies": {
     "less": "^2.7.1"

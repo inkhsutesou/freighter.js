@@ -9,14 +9,18 @@ const electron = require( "electron" ),
 
 		"width" : 800,
 		"height" : 600,
+
+		"x" : - 1920 + 800 / 2,
+		"y" : - 1280 + 600 / 2,
+
 		"frame" : false
 
 	},
 
 	urlConfig = {
 
-		pathname : path.join(__dirname, 'index.html'),
-		protocol : 'file:',
+		pathname : path.join( __dirname, "app/index.html" ),
+		protocol : "file",
 		slashes : true
 
 	},
@@ -33,7 +37,7 @@ function createWindow () {
 
   mainWindow.on('closed', function () {
 	
-		console.log( "-- mainWindow.on( closed )" );
+		console.log( "-- mainWindow.on( closed )", arguments );
 
     mainWindow = null
 
@@ -45,7 +49,7 @@ app.on( "ready", createWindow );
 
 app.on( "window-all-closed", function () {
 
-	console.log( "-- app.on( window-all-closed )" );
+	console.log( "-- app.on( window-all-closed )", arguments );
 
   if ( process.platform !== "darwin" ) { // OSX Specific
 
@@ -57,7 +61,7 @@ app.on( "window-all-closed", function () {
 
 app.on( "activate", function () {
 
-	console.log( "-- app.on( activate )" );
+	console.log( "-- app.on( activate )", arguments );
 
   if ( mainWindow === null ) { // OSX Specific
 

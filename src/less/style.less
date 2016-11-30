@@ -2,18 +2,26 @@
 @white: hsla( 000, 000%, 100%, 1.0 );
 @gold: hsla( 045, 050%, 050%, 1.0 );
 @green: hsla( 115, 050%, 050%, 1.0 );
+@red: hsla( 000, 050%, 050%, 1.0 );
 
 body, html {
 
 	background: @white;
+	font-size: 16px;
+	font-family: "MS PGOTHIC", Helvetica, sans-serif;
 
 }
 
 .button {
 
 	display: inline-block;
-	border: 1px solid @gold;
-	color: @gold;
+	width: 2rem;
+	height: 2rem;
+	line-height: 2rem;
+
+	text-align: center;
+	background-color: @gold;
+	color: @white;
 	cursor: pointer;
 
 	&:before {
@@ -25,8 +33,7 @@ body, html {
 
 	&:hover {
 
-		border-color: @green;
-		color: @green;
+		background-color: @green;
 
 	}
 
@@ -34,19 +41,37 @@ body, html {
 
 .add:before {
 
-	content: "+";
+	content: "\FF0B";
 
 }
 
 .remove:before {
 
-	content: "-";
+	content: "\FF0D";
 
 }
 
-.close:before {
+.close {
 
-	content: "X";
+	position: fixed;
+	top: 0;
+	right: 0;
+
+	background-color: @red;
+	opacity: 0.7;
+
+	&:before {
+
+		content: "\00D7";
+
+	}
+
+	&:hover {
+
+		background-color: @red;
+		opacity: 1.0;
+
+	}
 
 }
 
