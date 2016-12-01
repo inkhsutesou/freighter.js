@@ -2,8 +2,10 @@
 @white: hsla( 000, 000%, 100%, 1.0 );
 @grey: hsla( 000, 000%, 070%, 1.0 );
 @gold: hsla( 045, 050%, 050%, 1.0 );
+@yellow: hsla( 045, 075%, 075%, 1.0 );
 @green: hsla( 115, 050%, 050%, 1.0 );
 @red: hsla( 000, 050%, 050%, 1.0 );
+@blue: hsla( 180, 050%, 050%, 1.0 );
 
 @block: 3rem;
 
@@ -64,15 +66,36 @@ body, html {
 
 }
 
+.check {
+
+	&.behind {
+
+		background-color: @red;
+
+	}
+
+	&.current {
+
+		background-color: @blue;
+
+	}
+
+	&:before {
+
+		content: "\1F441";
+
+	}
+}
+
 .backup:before {
 
-	content: "\21F1";
+	content: "\21F2";
 
 }
 
 .restore:before {
 
-	content: "\21F2";
+	content: "\21F1";
 
 }
 

@@ -50,7 +50,8 @@ function addJob ( event ) {
 
 			job = {
 
-				restorePath: value,
+				sourcePath: value,
+				restorePath: value.split( PATH.sep).slice( 0, - 1 ).join( PATH.sep ),
 				backupPath: value.split( PATH.sep ).pop() + ".zip",
 				watchList: [],
 				watchMtime: [],
@@ -59,40 +60,57 @@ function addJob ( event ) {
 			}
 
 			settings.jobList.push( job );
-		
-			NODEDIR.files( value, function processFiles ( error, data ) {
-		
-			  console.log( "processFiles", arguments );
-		
-			  let fileList = data.filter( filterIgnoredFiles ),
-					i = fileList.length,
-					total = fileList.length,
-					count = 0;
 
-				job.watchList.push.apply( job.watchList, fileList );
-		
-			  while ( i -- ) {
-		
-			    FILESYSTEM.stat( fileList[ i ], function checkStatus ( error, data ) {
-	
-						job.watchMtime.unshift( data.mtime );
-		
-			      if ( ++ count === total ) {
-		
-							saveData( refreshScreen );
-		
-			      }
-		
-			    } );
-		
-			  }
-		
-			} );
+			saveData( refreshScreen );
 
 			break;
 
 		default :
 
+	}
+
+}
+
+function getWatchStats ( directory, callback ) {
+
+	console.log( "getWatchStats", arguments );
+
+	if ( typeof directory === "string" ) {
+
+		NODEDIR.files( directory, processFiles );
+
+	} else {
+
+		processFiles ( null, directory );
+
+	}
+	
+	function processFiles ( error, data ) {
+	
+		console.log( "processFiles", arguments );
+	
+		let watchList = data.filter( filterIgnoredFiles ),
+			watchMtime = [],
+			i = watchList.length,
+			total = watchList.length,
+			count = 0;
+	
+		while ( i -- ) {
+	
+			FILESYSTEM.stat( watchList[ i ], function checkStatus ( error, data ) {
+	
+				watchMtime.unshift( data.mtime.getTime() );
+	
+				if ( ++ count === total ) {
+	
+					callback( watchList, watchMtime );
+	
+				}
+	
+			} );
+	
+		}
+	
 	}
 
 }
@@ -107,12 +125,54 @@ function filterIgnoredFiles ( value ) {
 //	Job Buttons
 //==============================================================================
 
+function checkJob ( event ) {
+
+	console.log( "checkJob", arguments );
+
+	var target = event.target,
+		jobEl = target.parentNode.parentNode,
+		index = parseInt( jobEl.getAttribute( "jobIndex" ) ),
+		job = settings.jobList[ index ];
+
+	getWatchStats( job.watchList, function compareList ( watchList, watchMtime ) {
+
+		console.log( "compareList", arguments );
+
+		let i = watchList.length
+			,	isChanged = job.watchList.length !== i;
+
+		while ( ! isChanged && i -- ) {
+console.log( watchList[ i ], watchMtime[ i ], job.watchList[ i ], job.watchMtime[ i ]);
+			isChanged = watchMtime[ i ] !== job.watchMtime[ i ];
+
+		}
+
+		switch ( true ) {
+
+			case ( isChanged ) :
+
+				target.classList.remove( "current" );
+				target.classList.add( "behind" );
+
+				break;
+
+			default :
+
+				target.classList.remove( "behind" );
+				target.classList.add( "current" );
+
+		}
+
+	} );
+
+}
+
 function removeJob ( event ) {
 
 	console.log( "removeJob", arguments );
 
 	var target = event.target,
-		jobEl = target.parentNode,
+		jobEl = target.parentNode.parentNode,
 		index = parseInt( jobEl.getAttribute( "jobIndex" ) );
 
 	settings.jobList.splice( index, 1 );
@@ -122,27 +182,42 @@ function removeJob ( event ) {
 
 function backupJob ( event ) {
 
+	console.log( "backupJob", arguments );
+
 	var target = event.target,
-		jobEl = target.parentNode,
+		jobEl = target.parentNode.parentNode,
 		index = parseInt( jobEl.getAttribute( "jobIndex" ) ),
 		job = settings.jobList[ index ],
+		destination = "./app/archives/" + job.backupPath,
 
- 		zipConfig = { "sources" : [ source ], "destination": target },
+ 		zipConfig = { "sources" : [ job.sourcePath ], "destination": destination },
 		execConfig = { "error" : onZipError, "success" : onZipSuccess };
 
-	ZIP.zip( zipConfig )
-		.exec( execConfig );
+		getWatchStats( job.sourcePath, function ( watchList, watchMtime ) {
+
+			job.watchList.push.apply( job.watchList, watchList );
+			job.watchMtime.push.apply( job.watchMtime, watchMtime );
+	
+			ZIP.zip( zipConfig )
+				.exec( execConfig );
+
+			saveData( refreshScreen );
+
+		} );
 
 }
 
 function restoreJob ( event ) {
 
+	console.log( "restoreJob", arguments );
+
 	var target = event.target,
-		jobEl = target.parentNode,
+		jobEl = target.parentNode.parentNode,
 		index = parseInt( jobEl.getAttribute( "jobIndex" ) ),
 		job = settings.jobList[ index ],
+		source = "./app/archives/" + job.backupPath,
 
- 		zipConfig = { "sources" : [ source ], "destination": target },
+ 		zipConfig = { "source" : source, "destination": job.restorePath },
 		execConfig = { "error" : onZipError, "success" : onZipSuccess };
 
 	ZIP.unzip( zipConfig )
@@ -180,7 +255,7 @@ function refreshScreen ( callback ) {
 
 		jobContainer.innerHTML += template
 			.replace( /{{ index }}/, i )
-			.replace( /{{ path }}/, job.restorePath )
+			.replace( /{{ path }}/, job.sourcePath )
 			.replace( /{{ timestamp }}/, job.timeStamp );
 
 	}
@@ -189,8 +264,11 @@ function refreshScreen ( callback ) {
 
 	while ( i -- ) {
 
-		jobContainer.children[ i ].querySelector( ".backup.button" )
-			.addEventListener( "click", backupJob, false );
+		jobContainer.children[ i ].querySelector( ".check.button" )
+			.addEventListener( "click", checkJob, false );
+		
+				jobContainer.children[ i ].querySelector( ".backup.button" )
+					.addEventListener( "click", backupJob, false );
 		
 		jobContainer.children[ i ].querySelector( ".restore.button" )
 			.addEventListener( "click", restoreJob, false );
