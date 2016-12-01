@@ -1,13 +1,26 @@
 @charcoal: hsla( 000, 000%, 025%, 1.0 );
 @white: hsla( 000, 000%, 100%, 1.0 );
+@grey: hsla( 000, 000%, 070%, 1.0 );
 @gold: hsla( 045, 050%, 050%, 1.0 );
 @green: hsla( 115, 050%, 050%, 1.0 );
 @red: hsla( 000, 050%, 050%, 1.0 );
 
+@block: 3rem;
+
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
 body, html {
 
+	margin: 0;
+	padding: 0;
 	background: @white;
-	font-size: 16px;
+	font-size: 20px;
 	font-family: "MS PGOTHIC", Helvetica, sans-serif;
 
 }
@@ -15,9 +28,9 @@ body, html {
 .button {
 
 	display: inline-block;
-	width: 2rem;
-	height: 2rem;
-	line-height: 2rem;
+	width: @block;
+	height: @block;
+	line-height: @block;
 
 	text-align: center;
 	background-color: @gold;
@@ -51,6 +64,18 @@ body, html {
 
 }
 
+.backup:before {
+
+	content: "\21F1";
+
+}
+
+.restore:before {
+
+	content: "\21F2";
+
+}
+
 .close {
 
 	position: fixed;
@@ -70,6 +95,85 @@ body, html {
 
 		background-color: @red;
 		opacity: 1.0;
+
+	}
+
+}
+
+.job-container {
+
+	margin-top: @block;
+
+	&:empty:before {
+
+		content: "No Jobs";
+
+	}
+
+}
+
+.job {
+
+	position: relative;
+	padding: 0.5rem;
+	height: @block;
+
+	.container {
+
+		position: absolute;
+		top: 0;
+		height: 100%;
+	
+		font-size: 0;
+	
+		* {
+	
+			font-size: 1rem;
+	
+		}
+
+	}
+
+	.info {
+
+		left: 0;
+
+	}
+
+	.action {
+
+		right: 0;
+
+	}
+
+	.path {
+
+		vertical-align: middle;
+
+		&:after {
+
+			content: "";
+			display: inline-block;
+			position: relative;
+			height: 100%;
+			width: 0;
+
+		}
+
+	}
+
+	.timestamp {
+
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		font-size: 0.5rem;
+
+	}
+
+	&:nth-child( even ) {
+
+		background: @grey;
 
 	}
 

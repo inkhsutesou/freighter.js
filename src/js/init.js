@@ -1,6 +1,14 @@
 "use strict";
 
 const FILESYSTEM = require( "fs" ),
+	PATH = require( "path" ),
+	ZIP = require( "machinepack-zip" ),
+	ELECTRON = require( "electron" ),
+	NODEDIR = require( "node-dir" ),
+
+	REMOTE = ELECTRON.remote,
+	DIALOG = REMOTE.dialog,
+
 	NODELIST = {},
 	FSOPT = { "encoding": "utf-8" },
 	DATE = new Date(),
@@ -32,22 +40,54 @@ function addJob ( event ) {
 
 	console.log( "addJob", arguments );
 
-	var value = NODELIST.input.value;
-
-	NODELIST.input.value = "";
+	let dialogSettings = { "properties" : [ "openDirectory" ] },
+		value = DIALOG.showOpenDialog( dialogSettings )[ 0 ],
+		job;
 
 	switch ( true ) {
 
 		case ( !! value ) :
 
-			settings.jobList.push( {
+			job = {
 
 				restorePath: value,
-				timeStamp: DATE.getTime()
+				backupPath: value.split( PATH.sep ).pop() + ".zip",
+				watchList: [],
+				watchMtime: [],
+				timeStamp: DATE.toUTCString()
 
+			}
+
+			settings.jobList.push( job );
+		
+			NODEDIR.files( value, function processFiles ( error, data ) {
+		
+			  console.log( "processFiles", arguments );
+		
+			  let fileList = data.filter( filterIgnoredFiles ),
+					i = fileList.length,
+					total = fileList.length,
+					count = 0;
+
+				job.watchList.push.apply( job.watchList, fileList );
+		
+			  while ( i -- ) {
+		
+			    FILESYSTEM.stat( fileList[ i ], function checkStatus ( error, data ) {
+	
+						job.watchMtime.unshift( data.mtime );
+		
+			      if ( ++ count === total ) {
+		
+							saveData( refreshScreen );
+		
+			      }
+		
+			    } );
+		
+			  }
+		
 			} );
-
-			saveData( refreshScreen );
 
 			break;
 
@@ -56,6 +96,16 @@ function addJob ( event ) {
 	}
 
 }
+
+function filterIgnoredFiles ( value ) {
+
+	return value.indexOf( "node_modules" ) === -1;
+
+}
+
+//==============================================================================
+//	Job Buttons
+//==============================================================================
 
 function removeJob ( event ) {
 
@@ -67,6 +117,48 @@ function removeJob ( event ) {
 
 	settings.jobList.splice( index, 1 );
 	saveData( refreshScreen );
+
+}
+
+function backupJob ( event ) {
+
+	var target = event.target,
+		jobEl = target.parentNode,
+		index = parseInt( jobEl.getAttribute( "jobIndex" ) ),
+		job = settings.jobList[ index ],
+
+ 		zipConfig = { "sources" : [ source ], "destination": target },
+		execConfig = { "error" : onZipError, "success" : onZipSuccess };
+
+	ZIP.zip( zipConfig )
+		.exec( execConfig );
+
+}
+
+function restoreJob ( event ) {
+
+	var target = event.target,
+		jobEl = target.parentNode,
+		index = parseInt( jobEl.getAttribute( "jobIndex" ) ),
+		job = settings.jobList[ index ],
+
+ 		zipConfig = { "sources" : [ source ], "destination": target },
+		execConfig = { "error" : onZipError, "success" : onZipSuccess };
+
+	ZIP.unzip( zipConfig )
+		.exec( execConfig );
+
+}
+
+function onZipSuccess ( data ) {
+
+console.log( "onZipSuccess", data );
+
+}
+
+function onZipError ( error ) {
+
+console.log( "onZipError", error );
 
 }
 
@@ -97,6 +189,12 @@ function refreshScreen ( callback ) {
 
 	while ( i -- ) {
 
+		jobContainer.children[ i ].querySelector( ".backup.button" )
+			.addEventListener( "click", backupJob, false );
+		
+		jobContainer.children[ i ].querySelector( ".restore.button" )
+			.addEventListener( "click", restoreJob, false );
+		
 		jobContainer.children[ i ].querySelector( ".remove.button" )
 			.addEventListener( "click", removeJob, false );
 

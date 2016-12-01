@@ -1,21 +1,9 @@
 "use strict";
 const electron = require( "electron" ),
+	BrowserWindow = electron.BrowserWindow,
 	path = require( "path" ),
 	url = require( "url" ),
 	app = electron.app,
-
-	BrowserWindow = electron.BrowserWindow,
-	browserConfig = {
-
-		"width" : 800,
-		"height" : 600,
-
-		"x" : - 1920 + 800 / 2,
-		"y" : - 1280 + 600 / 2,
-
-		"frame" : false
-
-	},
 
 	urlConfig = {
 
@@ -30,6 +18,20 @@ let mainWindow;
 
 function createWindow () {
 
+	let { width, height } = electron.screen.getPrimaryDisplay().workAreaSize,
+
+		browserConfig = {
+
+			"width" : width * 0.75,
+			"height" : height * 0.75,
+
+			// "x" : - 1920 + 800 / 2,
+			// "y" : - 1280 + 600 / 2,
+
+			// "frame" : false
+
+		};
+   
   mainWindow = new BrowserWindow( browserConfig );
   mainWindow.loadURL( urlString )
 

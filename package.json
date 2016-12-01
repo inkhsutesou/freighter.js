@@ -29,6 +29,7 @@
     "node-dir": "^0.1.16"
   },
   "dependencies": {
-    "less": "^2.7.1"
+    "less": "^2.7.1",
+    "machinepack-zip": "^1.1.0"
   }
 }
