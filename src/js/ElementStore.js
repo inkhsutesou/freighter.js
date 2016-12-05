@@ -14,6 +14,8 @@ function ElementStore () {
 
 function initElementStore () {
 
+	console.log( "initElementStore", arguments );
+
 	ElementStore.initialized = true;
 
 	let prototype = ElementStore.prototype;

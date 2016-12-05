@@ -1,5 +1,9 @@
 function initJobUi () {
 
+	console.log( "initJobUi", arguments );
+
+	let prototype = Job.prototype;
+
 	function appendClick ( event ) {
 
 		console.log( "appendClick", arguments );

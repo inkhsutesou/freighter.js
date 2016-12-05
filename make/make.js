@@ -38,6 +38,8 @@ function appendJS ( error, data ) {
 
 	if ( ++ jsFileCount === jsFileTotal ) {
 
+		scriptText += fileSystem.readFileSync( "./make/init.js" ),
+
 		fileSystem.writeFile( "./app/script.js", scriptText, fsConfig, NOOP );
 
 	}

@@ -16,7 +16,11 @@ function Job ( config ) {
 	ELEMENTSTORE
 		.set( "job", ELEMENTSTORE.clone( "job-template" ) );
 
-	this.element = ELEMENTSTORE.get( "job" );
+
+	Object.defineProperty( this, "element", {
+		"value" : ELEMENTSTORE.get( "job" )
+	} );
+
 	this.element.dataJob = this;
 
 	ELEMENTSTORE.get( "job", ".sourcepath" )
@@ -36,11 +40,31 @@ function Job ( config ) {
 	ELEMENTSTORE.get( "job-container" )
 		.appendChild( this.element );
 
-	settings.jobList.push( this );
+	FREIGHTER.settings.jobList.push( this );
 
 	return this;
 
 }
+
+function formatList ( list ) {
+
+	console.log( "formatList", arguments ); 
+
+	let i = list.length;
+
+	while ( i -- ) {
+
+		list[ i ] = new Job( list[ i ] );
+
+	}
+
+	return list;
+
+}
+
+Object.defineProperty( Job, "formatList", {
+	"value" : formatList
+} );
 
 function initJob () {
 
@@ -52,8 +76,7 @@ function initJob () {
 
 	ELEMENTSTORE
 
-		.set( "job-template", "template .job" )
-		.set( "job-container", ".job-container" );
+		.set( "job-template", ".template-container .job" );
 
 	initJobUi();
 
@@ -61,8 +84,8 @@ function initJob () {
 
 		console.log( "remove", arguments );
 
-		this.job.element.remove();
-		settings.jobList.splice( this.index, 1 );
+		this.element.remove();
+		FREIGHTER.settings.jobList.splice( this.index, 1 );
 
 		FREIGHTER.save( FREIGHTER.refresh );
 
@@ -78,7 +101,7 @@ function initJob () {
 
 	}
 
-	Object.defineProperty( prototype, "remove", {
+	Object.defineProperty( prototype, "restore", {
 	  "value" : restore
 	} );
 
@@ -90,7 +113,7 @@ function initJob () {
 
 	}
 
-	Object.defineProperty( prototype, "remove", {
+	Object.defineProperty( prototype, "backup", {
 	  "value" : backup
 	} );
 
@@ -100,7 +123,7 @@ function initJob () {
 
 	}
 
-	Object.defineProperty( prototype, "remove", {
+	Object.defineProperty( prototype, "append", {
 	  "value" : append
 	} );
 
@@ -108,7 +131,7 @@ function initJob () {
 	
 		console.log( "getIndex", arguments );
 
-		return settings.jobList.indexOf( this );
+		return FREIGHTER.settings.jobList.indexOf( this );
 
 	}
 

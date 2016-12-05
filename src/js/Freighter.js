@@ -13,12 +13,13 @@ function Freighter () {
 function initFreighter () {
 
 	let prototype = Freighter.prototype
-		, dialogSettings = { "properties" : [ "openFolder" ] };
+		, dialogSettings = { "properties" : [ "openDirectory" ] };
 
 	Freighter.initialized = true;
 
 	ELEMENTSTORE
 
+		.set( "job-container", ".job-container" )
 		.set( "close", ".close.button" )
 		.set( "add", ".add.button" )
 
@@ -41,7 +42,7 @@ function initFreighter () {
 
 		console.log( "addJob", arguments );
 
-		let value = DIALOG.showOpenDialog( dialogSettings )[ 0 ];
+		let value = DIALOG.showOpenDialog( dialogSettings );
 
 		switch ( true ) {
 
@@ -49,12 +50,12 @@ function initFreighter () {
 
 				new Job( {
 
-					sourcePath: value,
+					sourcePath: value[ 0 ],
 					timeStamp: DATE.toUTCString()
 
 				} );
 
-				this.save( this.refresh );
+				FREIGHTER.save( FREIGHTER.refresh );
 
 				break;
 
@@ -117,6 +118,7 @@ function initFreighter () {
 				default :
 
 					self.settings = JSON.parse( data );
+					Job.formatList( self.settings.jobList );
 					callback && callback.apply( self );
 
 			}
