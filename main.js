@@ -1,4 +1,3 @@
-"use strict";
 const electron = require( "electron" ),
 	BrowserWindow = electron.BrowserWindow,
 	path = require( "path" ),

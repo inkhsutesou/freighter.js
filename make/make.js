@@ -10,7 +10,7 @@ const less = require( "less" ),
 
 	},
 	separator = "\n\n//=====================================================\n\n",
-	scriptText = "",
+	scriptText = fileSystem.readFileSync( "./make/const.js" ),
 	NOOP = function NOOP () {};
 
 let jsFileTotal, jsFileCount;
